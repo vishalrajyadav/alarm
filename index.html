@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="pngwing.com.png" type="image/x-icon">
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+     
+        .conatiner{
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(365deg,rgb(255, 152, 152),rgb(113, 113, 255),rgb(155, 244, 155),rgb(252, 252, 152));
+            background-size: 400% 400%;
+            animation: gradientAnimation 2s linear infinite alternate;
+
+        }
+
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+        #clock{
+            font-size: 15vw;
+            background-image: linear-gradient(180deg,rgb(0, 54, 24) 0%,rgb(255, 234, 0)50%,rgb(6, 10, 115) 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -moz-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            -moz-text-fill-color:transparent;
+           
+        }
+        input{
+            border: 2px solid green;
+            border-radius: 4px;
+            display: block;
+            font-size: 14px;
+            padding: 10px 15px ;
+        }
+        .controls{
+           margin-top: 16px;
+            
+
+        }
+        .button{
+            font-weight: bold;
+            border-radius: 5px;
+            border: none;
+            color: white;
+            padding: 8px 20px ;
+            margin-left: 4px ;
+            cursor: pointer;
+            font-size: 15px;
+        }
+        .set-alarm{
+            background-color: red;
+        }
+        .clear-alarm{
+            background-color: green;
+        }
+        
+    </style>
+    <title>ALARM CLOCK</title>
+</head>
+<body>
+    <div class="conatiner">
+        <div id="clock"> </div>
+        <input type="datetime-local" onchange="setAlarmTime(this.value)" name="alarmType">
+        <div class="controls">
+            <button class="button set-alarm" onclick="setAlarm()" >Set Alarm</button>
+            <button class="button clear-alarm"onclick="clearAlarm()" >Clear Alarm </button>
+        </div>
+    </div>
+
+    <script>
+        // display the clock
+        let display = document.getElementById("clock");
+        function updateTime() {
+            const date = new Date();
+            const hour = formatTime(date.getHours());
+            const minutes = formatTime(date.getMinutes());
+            const seconds = formatTime(date.getSeconds());
+            display.innerText = hour + " : " + minutes + " : " + seconds;
+        }
+
+        function formatTime(time) {
+            if (time < 10) {
+                return "0" + time;
+            }
+            return time;
+        }
+        setInterval(updateTime, 1000);
+
+        // Set alarm
+        const audio = new Audio("Funny Hen Sound Song - Cock Funny Sound.mp3");
+        audio.loop = true;
+        let alarmTime = null;
+        let alarmTimeOut = null;
+
+        // Check for a saved alarm in local storage
+        const savedAlarmTime = localStorage.getItem('alarmTime');
+        if (savedAlarmTime) {
+            alarmTime = savedAlarmTime;
+            setAlarm();
+        }
+
+        function setAlarmTime(value) {
+            alarmTime = value;
+            // Save the alarm time to local storage
+            localStorage.setItem('alarmTime', alarmTime);
+        }
+
+        function setAlarm() {
+            if (alarmTime) {
+                const current = new Date();
+                const timeToAlarm = new Date(alarmTime);
+                if (timeToAlarm > current) {
+                    const timeout = timeToAlarm.getTime() - current.getTime();
+                    alarmTimeOut = setTimeout(function () {
+                        audio.play();
+                    }, timeout);
+                }
+                alert("Alarm Set");
+            }
+        }
+
+        // Stop alarm
+        function clearAlarm() {
+            audio.pause();
+            if (alarmTime) {
+                clearTimeout(alarmTimeOut);
+                // Clear the saved alarm time from local storage
+                localStorage.removeItem('alarmTime');
+            }
+            alert("Alarm Paused");
+        }
+
+    </script>
+</body>
+</html>
